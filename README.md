@@ -14,7 +14,8 @@ Xcode: 15.1
 
 ## 🏃🏽‍♂️ Steps to run and debug 
 ```shell
-  cd ~/OnboardPietroPieri 
+  cd ~/OnboardPietroPieri
+  npm install
 ```
 
 Now you have three forms to run the project:
