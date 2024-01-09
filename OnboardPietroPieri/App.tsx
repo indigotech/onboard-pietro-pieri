@@ -8,10 +8,15 @@
 import React, { useState } from "react";
 import { Alert, SafeAreaView, View, Text, StyleSheet } from "react-native";
 import { LoginButton, TextField } from "./components/loginscreen";
+import { LOGIN } from "./apollo/mutation";
+import { useMutation } from "@apollo/client";
+import { LoginData } from "./interfaces/mutation";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const App = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginMutation, { error, data }] = useMutation<LoginData>(LOGIN);
 
   const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,7 +29,7 @@ const App = () => {
     );
   };
 
-  const validateLogin = () => {
+  const validateLogin = async () => {
     if (!isValidEmail(email)) {
       Alert.alert("Erro", "Por favor, insira um email válido.");
       return;
@@ -38,7 +43,24 @@ const App = () => {
       return;
     }
 
-    Alert.alert("Sucesso!", `Bem-vindo, ${email}!`);
+    try {
+      const response = await loginMutation({
+        variables: { data: { email: email, password: password } },
+      });
+
+      if (response.data) {
+        await AsyncStorage.setItem("userToken", response.data.login.token);
+
+        const userToken = await AsyncStorage.getItem("userToken");
+
+        console.log(userToken);
+      }
+
+      Alert.alert("Sucesso!", `Bem-vindo, ${email}!`);
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Erro", "Ocorreu um erro durante o login.");
+    }
   };
 
   return (
