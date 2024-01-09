@@ -12,7 +12,7 @@ import {
   Text,
   StyleSheet
 } from 'react-native';
-import {LoginButton, TextField} from './components/loginscreen'
+import {LoginButton, TextField} from './components/login-screen'
 
 const App = () => {
   return (
