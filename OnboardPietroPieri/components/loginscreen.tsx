@@ -12,6 +12,7 @@ import {
   View,
   Text,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 
 type TextFieldProps = PropsWithChildren<{
@@ -23,6 +24,7 @@ type TextFieldProps = PropsWithChildren<{
 type LoginButtonProps = PropsWithChildren<{
   body: string;
   onPress: () => void;
+  loading: boolean;
 }>;
 
 function TextField({
@@ -45,10 +47,22 @@ function TextField({
   );
 }
 
-function LoginButton({ body, onPress }: LoginButtonProps): React.JSX.Element {
+function LoginButton({
+  body,
+  onPress,
+  loading,
+}: LoginButtonProps): React.JSX.Element {
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={styles.buttonText}>{body}</Text>
+    <TouchableOpacity
+      style={[styles.button, loading ? styles.disabledButton : null]}
+      onPress={onPress}
+      disabled={loading}
+    >
+      {loading ? (
+        <ActivityIndicator color="black" size="small" />
+      ) : (
+        <Text style={styles.buttonText}>{body}</Text>
+      )}
     </TouchableOpacity>
   );
 }
@@ -84,6 +98,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
     fontSize: 16,
+  },
+  disabledButton: {
+    backgroundColor: "yellow",
   },
 });
 
