@@ -7,22 +7,12 @@
 
 import React, { useState } from "react";
 import { Alert, SafeAreaView, View, Text, StyleSheet } from "react-native";
-import {LoginButton, TextField} from './components/login-screen'
+import { LoginButton, TextField } from "./components/login-screen";
+import { isValidEmail, isValidPassword } from "./validation/validation";
 
 const App = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const isValidPassword = (password: string) => {
-    return (
-      password.length >= 7 && /[a-zA-Z]/.test(password) && /\d/.test(password)
-    );
-  };
 
   const validateLogin = () => {
     if (!isValidEmail(email)) {
