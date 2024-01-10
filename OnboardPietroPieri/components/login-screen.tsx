@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, { PropsWithChildren } from "react";
+import React from "react";
 import {
   TouchableOpacity,
   TextInput,
@@ -14,16 +14,16 @@ import {
   StyleSheet,
 } from "react-native";
 
-type TextFieldProps = PropsWithChildren<{
+interface TextFieldProps {
   title: string;
   type?: string;
   onChange: (value: string) => void;
-}>;
+}
 
-type LoginButtonProps = PropsWithChildren<{
+interface LoginButtonProps {
   body: string;
   onPress: () => void;
-}>;
+}
 
 function TextField({
   title,

@@ -40,10 +40,6 @@ const App = () => {
 
       if (response.data) {
         await AsyncStorage.setItem("userToken", response.data.login.token);
-
-        const userToken = await AsyncStorage.getItem("userToken");
-
-        console.log(userToken);
       }
 
       Alert.alert("Sucesso!", `Bem-vindo, ${email}!`);
