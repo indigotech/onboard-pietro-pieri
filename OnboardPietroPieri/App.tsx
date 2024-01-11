@@ -12,7 +12,7 @@ import { client } from "./apollo/apolloclient";
 import { ApolloProvider } from "@apollo/client";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { BlankPage } from "./components/blank-page";
+import { UserListScreen } from "./components/user-list";
 
 const Stack = createStackNavigator();
 
@@ -26,7 +26,7 @@ const App = () => {
             screenOptions={{ headerShown: false }}
           >
             <Stack.Screen name="LoginPage" component={LoginPage} />
-            <Stack.Screen name="BlankPage" component={BlankPage} />
+            <Stack.Screen name="UserListScreen" component={UserListScreen} />
           </Stack.Navigator>
         </SafeAreaView>
       </NavigationContainer>

@@ -39,7 +39,7 @@ export const LoginPage = () => {
       if (response.data) {
         await AsyncStorage.setItem("userToken", response.data.login.token);
 
-        navigation.navigate("BlankPage" as never);
+        navigation.navigate("UserListScreen" as never);
       }
 
       Alert.alert("Sucesso!", `Bem-vindo, ${email}!`);
