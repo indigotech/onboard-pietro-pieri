@@ -1,32 +1,26 @@
-import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  FlatList,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { FlatList, Text, ActivityIndicator } from "react-native";
 import { User } from "../interfaces/mutation";
 import { USERS } from "../apollo/query";
 import { useQuery } from "@apollo/client";
-import { Users } from "../interfaces/query";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { renderItem } from "../utils/render";
+import { PageInput, Users } from "../interfaces/query";
+import { pageInputIni } from "../utils/pages";
 
-export const UserListScreen = () => {
-  const [token, setToken] = useState<string | null>(null);
+interface UserListProps {
+  token: string | null;
+}
 
-  useEffect(() => {
-    const getToken = async () => {
-      const userToken = await AsyncStorage.getItem("userToken");
-      setToken(userToken);
-    };
+export const UserList: React.FC<UserListProps> = ({ token }) => {
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const page = useRef<PageInput>(pageInputIni);
+  const [userList, setUserList] = useState<User[]>([]);
 
-    getToken();
-  }, []);
-
-  const { loading, error, data } = useQuery<Users>(USERS, {
-    skip: token === null,
+  const { error, data, fetchMore } = useQuery<Users>(USERS, {
+    variables: {
+      usersData2: { offset: page.current.offset, limit: page.current.limit },
+    },
     context: {
       headers: {
         authorization: token,
@@ -34,7 +28,40 @@ export const UserListScreen = () => {
     },
   });
 
-  if (loading) {
+  useEffect(() => {
+    if (data?.users.nodes) {
+      setUserList((prevList) => [...prevList, ...data.users.nodes]);
+    }
+    setInitialLoading(false);
+  }, [data]);
+
+  useEffect(() => {
+    if (!loadingMore) return;
+
+    if (data?.users.pageInfo.hasNextPage) {
+      fetchMore({
+        variables: {
+          data: {
+            offset: page.current.offset + page.current.limit,
+            limit: page.current.limit,
+          },
+        },
+      }).then(() => {
+        setLoadingMore(false);
+        page.current.offset += page.current.limit;
+      });
+    } else {
+      setLoadingMore(false);
+    }
+  }, [loadingMore, data]);
+
+  const handleEndReached = () => {
+    if (!loadingMore) {
+      setLoadingMore(true);
+    }
+  };
+
+  if (initialLoading) {
     return <ActivityIndicator color="black" size="large" />;
   }
 
@@ -42,22 +69,16 @@ export const UserListScreen = () => {
     return <Text>Ocorreu um ao carregar os usuários: {error.message}</Text>;
   }
 
-  const userList: User[] | undefined = data?.users.nodes;
-
   return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={userList}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
-    </SafeAreaView>
+    <FlatList
+      data={userList}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+      onEndReached={handleEndReached}
+      onEndReachedThreshold={0.1}
+      ListFooterComponent={
+        loadingMore ? <ActivityIndicator color="black" /> : null
+      }
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-});
