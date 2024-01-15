@@ -39,8 +39,6 @@ export const LoginPage = () => {
       if (response.data) {
         await AsyncStorage.setItem("userToken", response.data.login.token);
 
-        setLoading(false);
-
         navigation.navigate("BlankPage" as never);
       }
 
@@ -57,13 +55,11 @@ export const LoginPage = () => {
   return (
     <>
       <Header />
-      <View>
-        <TextField title="E-mail" onChange={setEmail} />
+      <TextField title="E-mail" onChange={setEmail} />
 
-        <TextField title="Senha" type="password" onChange={setPassword} />
+      <TextField title="Senha" type="password" onChange={setPassword} />
 
-        <Button body={"Entrar"} onPress={validateLogin} loading={loading} />
-      </View>
+      <Button body={"Entrar"} onPress={validateLogin} loading={loading} />
     </>
   );
 };
