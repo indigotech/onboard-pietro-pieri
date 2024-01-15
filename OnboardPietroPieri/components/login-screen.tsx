@@ -12,6 +12,7 @@ import {
   View,
   Text,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 
 interface TextFieldProps {
@@ -20,9 +21,10 @@ interface TextFieldProps {
   onChange: (value: string) => void;
 }
 
-interface LoginButtonProps {
+interface ButtonProps {
   body: string;
   onPress: () => void;
+  loading: boolean;
 }
 
 function TextField({
@@ -45,10 +47,18 @@ function TextField({
   );
 }
 
-function LoginButton({ body, onPress }: LoginButtonProps): React.JSX.Element {
+function Button({ body, onPress, loading }: ButtonProps): React.JSX.Element {
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={styles.buttonText}>{body}</Text>
+    <TouchableOpacity
+      style={[styles.button, loading ? styles.disabledButton : null]}
+      onPress={onPress}
+      disabled={loading}
+    >
+      {loading ? (
+        <ActivityIndicator color="black" size="small" />
+      ) : (
+        <Text style={styles.buttonText}>{body}</Text>
+      )}
     </TouchableOpacity>
   );
 }
@@ -85,6 +95,9 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
   },
+  disabledButton: {
+    backgroundColor: "yellow",
+  },
 });
 
-export { TextField, LoginButton };
+export { TextField, Button };
