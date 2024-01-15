@@ -1,5 +1,10 @@
 import React, { useState, useRef } from "react";
-import { FlatList, Text, ActivityIndicator } from "react-native";
+import {
+  FlatList,
+  Text,
+  ActivityIndicator,
+  RefreshControl,
+} from "react-native";
 import { User } from "../interfaces/mutation";
 import { USERS } from "../apollo/query";
 import { useQuery } from "@apollo/client";
@@ -7,29 +12,21 @@ import { renderItem } from "../utils/render";
 import { PageInput, Users } from "../interfaces/query";
 import { pageInputInitialValue } from "../utils/pages";
 
-interface UserListProps {
-  token: string | null;
-}
-
-export const UserList: React.FC<UserListProps> = ({ token }) => {
+export const UserList = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const page = useRef<PageInput>(pageInputInitialValue);
   const pageLimit = 20;
+  const [refreshing, setRefreshing] = useState(false);
   const [userList, setUserList] = useState<User[]>([]);
 
-  const { error, data, fetchMore } = useQuery<Users>(USERS, {
+  const { error, data, fetchMore, refetch } = useQuery<Users>(USERS, {
     variables: {
       input: { offset: page.current.offset, limit: pageLimit },
     },
-    context: {
-      headers: {
-        authorization: token,
-      },
-    },
     onCompleted: (data) => {
       if (data.users.nodes) {
-        setUserList((prevList) => [...prevList, ...data.users.nodes]);
+        setUserList(userList.concat(data.users.nodes));
       }
       setInitialLoading(false);
     },
@@ -56,6 +53,18 @@ export const UserList: React.FC<UserListProps> = ({ token }) => {
     }
   };
 
+  const handleRefresh = () => {
+    setRefreshing(true);
+    page.current.offset = 0;
+    setUserList([]);
+    refetch({
+      input: { offset: page.current.offset, limit: pageLimit },
+    }).then(() => {
+      setRefreshing(false);
+    });
+    setUserList(data?.users.nodes || []);
+  };
+
   if (initialLoading) {
     return <ActivityIndicator color="black" size="large" />;
   }
@@ -68,11 +77,14 @@ export const UserList: React.FC<UserListProps> = ({ token }) => {
     <FlatList
       data={userList}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item, index) => item.id + index.toString()}
       onEndReached={handleEndReached}
       onEndReachedThreshold={0.1}
       ListFooterComponent={
         loadingMore ? <ActivityIndicator color="black" /> : null
+      }
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }
     />
   );
