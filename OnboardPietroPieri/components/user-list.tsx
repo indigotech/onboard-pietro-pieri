@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { FlatList, Text, ActivityIndicator } from "react-native";
 import { User } from "../interfaces/mutation";
 import { USERS } from "../apollo/query";
@@ -35,29 +35,24 @@ export const UserList: React.FC<UserListProps> = ({ token }) => {
     },
   });
 
-  useEffect(() => {
-    if (!loadingMore) return;
-
-    if (data?.users.pageInfo.hasNextPage) {
-      fetchMore({
-        variables: {
-          input: {
-            offset: page.current.offset + pageLimit,
-            limit: pageLimit,
-          },
-        },
-      }).then(() => {
-        setLoadingMore(false);
-        page.current.offset += pageLimit;
-      });
-    } else {
-      setLoadingMore(false);
-    }
-  }, [loadingMore, data]);
-
   const handleEndReached = () => {
     if (!loadingMore) {
       setLoadingMore(true);
+      if (data?.users.pageInfo.hasNextPage) {
+        fetchMore({
+          variables: {
+            input: {
+              offset: page.current.offset + pageLimit,
+              limit: pageLimit,
+            },
+          },
+        }).then(() => {
+          setLoadingMore(false);
+          page.current.offset += pageLimit;
+        });
+      } else {
+        setLoadingMore(false);
+      }
     }
   };
 
