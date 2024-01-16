@@ -5,7 +5,7 @@ import { USERS } from "../apollo/query";
 import { useQuery } from "@apollo/client";
 import { renderItem } from "../utils/render";
 import { PageInput, Users } from "../interfaces/query";
-import { pageInputIni } from "../utils/pages";
+import { pageInputInitialValue } from "../utils/pages";
 
 interface UserListProps {
   token: string | null;
@@ -14,26 +14,26 @@ interface UserListProps {
 export const UserList: React.FC<UserListProps> = ({ token }) => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
-  const page = useRef<PageInput>(pageInputIni);
+  const page = useRef<PageInput>(pageInputInitialValue);
+  const pageLimit = 20;
   const [userList, setUserList] = useState<User[]>([]);
 
   const { error, data, fetchMore } = useQuery<Users>(USERS, {
     variables: {
-      usersData2: { offset: page.current.offset, limit: page.current.limit },
+      input: { offset: page.current.offset, limit: pageLimit },
     },
     context: {
       headers: {
         authorization: token,
       },
     },
+    onCompleted: (data) => {
+      if (data.users.nodes) {
+        setUserList((prevList) => [...prevList, ...data.users.nodes]);
+      }
+      setInitialLoading(false);
+    },
   });
-
-  useEffect(() => {
-    if (data?.users.nodes) {
-      setUserList((prevList) => [...prevList, ...data.users.nodes]);
-    }
-    setInitialLoading(false);
-  }, [data]);
 
   useEffect(() => {
     if (!loadingMore) return;
@@ -41,14 +41,14 @@ export const UserList: React.FC<UserListProps> = ({ token }) => {
     if (data?.users.pageInfo.hasNextPage) {
       fetchMore({
         variables: {
-          data: {
-            offset: page.current.offset + page.current.limit,
-            limit: page.current.limit,
+          input: {
+            offset: page.current.offset + pageLimit,
+            limit: pageLimit,
           },
         },
       }).then(() => {
         setLoadingMore(false);
-        page.current.offset += page.current.limit;
+        page.current.offset += pageLimit;
       });
     } else {
       setLoadingMore(false);
