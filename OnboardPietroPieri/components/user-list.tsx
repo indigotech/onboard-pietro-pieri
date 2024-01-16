@@ -3,7 +3,6 @@ import {
   SafeAreaView,
   FlatList,
   Text,
-  View,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
@@ -12,6 +11,7 @@ import { USERS } from "../apollo/query";
 import { useQuery } from "@apollo/client";
 import { Users } from "../interfaces/query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { renderItem } from "../utils/render";
 
 export const UserListScreen = () => {
   const [token, setToken] = useState<string | null>(null);
@@ -44,14 +44,6 @@ export const UserListScreen = () => {
 
   const userList: User[] | undefined = data?.users.nodes;
 
-  const renderItem = ({ item }: { item: User }) => (
-    <View style={styles.userItem}>
-      <Text style={styles.userName}>{item.name}</Text>
-
-      <Text style={styles.userEmail}>{item.email}</Text>
-    </View>
-  );
-
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
@@ -67,19 +59,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-  },
-  userItem: {
-    backgroundColor: "#eee",
-    padding: 20,
-    marginVertical: 8,
-    borderRadius: 10,
-  },
-  userName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  userEmail: {
-    fontSize: 14,
-    color: "gray",
   },
 });
