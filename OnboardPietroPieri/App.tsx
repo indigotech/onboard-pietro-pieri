@@ -13,6 +13,7 @@ import { ApolloProvider } from "@apollo/client";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { UserListScreen } from "./components/user-screen";
+import { UserDetail } from "./components/user-detail";
 
 const Stack = createStackNavigator();
 
@@ -27,6 +28,7 @@ const App = () => {
           >
             <Stack.Screen name="LoginPage" component={LoginPage} />
             <Stack.Screen name="UserListScreen" component={UserListScreen} />
+            <Stack.Screen name="UserDetail" component={UserDetail} />
           </Stack.Navigator>
         </SafeAreaView>
       </NavigationContainer>
