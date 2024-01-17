@@ -5,12 +5,9 @@ export const USERS = gql`
   query Users($input: PageInput) {
     users(data: $input) {
       nodes {
-        id
         name
-        phone
-        birthDate
         email
-        role
+        id
       }
       count
       pageInfo {
@@ -19,6 +16,19 @@ export const USERS = gql`
         hasNextPage
         hasPreviousPage
       }
+    }
+  }
+`;
+
+export const USER = gql`
+  query User($id: ID) {
+    user(id: $id) {
+      id
+      name
+      phone
+      birthDate
+      email
+      role
     }
   }
 `;
