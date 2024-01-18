@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import { ParamListBase, RouteProp } from "@react-navigation/native";
+import { ParamListBase } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQuery } from "@apollo/client";
 import { USER } from "../apollo/query";
@@ -8,16 +8,10 @@ import { UserOutput } from "../interfaces/query";
 import { User } from "../interfaces/mutation";
 import { BackButton } from "./back-button";
 
-type UserDetailRouteProp = RouteProp<ParamListBase, "UserDetail">;
-
 type Props = NativeStackScreenProps<ParamListBase, "UserDetail">;
 
-export const UserDetail: React.FC<Props> = ({
-  route,
-}: {
-  route: UserDetailRouteProp;
-}) => {
-  const { id } = (route.params as { id: string }) || { id: undefined };
+export const UserDetail: React.FC<Props> = ({ route }) => {
+  const { id } = (route.params || {}) as { id?: string };
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
 

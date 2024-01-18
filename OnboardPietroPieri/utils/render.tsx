@@ -7,9 +7,9 @@ export const renderItem = ({
   onPress,
 }: {
   item: User;
-  onPress: (id: string) => void;
+  onPress: () => void;
 }) => (
-  <TouchableOpacity onPress={() => onPress(item.id)}>
+  <TouchableOpacity onPress={onPress}>
     <View style={styles.userItem}>
       <Text style={styles.userName}>{item.name}</Text>
 
