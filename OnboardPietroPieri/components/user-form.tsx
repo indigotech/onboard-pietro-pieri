@@ -8,11 +8,7 @@ import {
   View,
 } from "react-native";
 import { RadioButton } from "react-native-paper";
-import {
-  isValidEmail,
-  isValidPassword,
-  isvalidateBirthDate,
-} from "../validation/validation";
+import { formValidate } from "../validation/validation";
 import { ApolloError, useMutation } from "@apollo/client";
 import { CREATE_USER } from "../apollo/mutation";
 import { Button } from "./login-screen";
@@ -33,22 +29,12 @@ export const UserForm = ({ closeModal }: UserFormProps) => {
   const [loading, setLoading] = useState(false);
 
   const handleFormSubmit = async () => {
-    setLoading(true);
     const userData = { name, email, phone, birthDate, password, role };
-    if (!isvalidateBirthDate(userData.birthDate)) {
-      Alert.alert(
-        "Erro",
-        "Insira um data de nascimento valida (antes de 01-01-2020 e no formato (DD/MM/YYYY)",
-      );
-    } else if (!isValidPassword(userData.password)) {
-      Alert.alert(
-        "Erro",
-        "Por favor, a senha deve não ser vazia, deve ter pelo menos 7 caracteres, pelo menos uma letra e um dígito.",
-      );
-    } else if (!isValidEmail(userData.email)) {
-      Alert.alert("Erro", "Por favor, insira um email válido.");
+    if (!formValidate(password, email, birthDate)) {
+      /* empty */
     } else {
       try {
+        setLoading(true);
         const response = await createUser({
           variables: { data: userData },
         });
