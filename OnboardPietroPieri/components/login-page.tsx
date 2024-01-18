@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { isValidEmail, isValidPassword } from "../validation/validation";
 import { Alert } from "react-native";
 import { TextField, Button } from "./login-screen";
-import { useMutation } from "@apollo/client";
+import { ApolloError, useMutation } from "@apollo/client";
 import { LOGIN } from "../apollo/mutation";
 import { LoginData } from "../interfaces/mutation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -12,13 +12,19 @@ import { Header } from "./header";
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loginMutation, { error, data }] = useMutation<LoginData>(LOGIN);
+  const [loginMutation] = useMutation<LoginData>(LOGIN);
   const navigation = useNavigation();
+  const [errorEmail, setErrorEmail] = useState(false);
+  const [errorPassword, setErrorPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const validateLogin = async () => {
+    setErrorEmail(false);
+    setErrorPassword(false);
+
     if (!isValidEmail(email)) {
       Alert.alert("Erro", "Por favor, insira um email válido.");
+      setErrorEmail(true);
       return;
     }
 
@@ -27,6 +33,7 @@ export const LoginPage = () => {
         "Erro",
         "Por favor, a senha deve não ser vazia, deve ter pelo menos 7 caracteres, pelo menos uma letra e um dígito.",
       );
+      setErrorPassword(true);
       return;
     }
 
@@ -46,7 +53,13 @@ export const LoginPage = () => {
     } catch (error) {
       console.log(error);
 
-      Alert.alert("Erro", "Ocorreu um erro durante o login.");
+      if (error) {
+        const errorApollo = error as ApolloError;
+        Alert.alert(
+          "Erro",
+          `Ocorreu um erro durante o login: ${errorApollo.message}`,
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -54,10 +67,23 @@ export const LoginPage = () => {
 
   return (
     <>
-      <Header />
-      <TextField title="E-mail" onChange={setEmail} />
+      <Header text="Bem-vindo(a) à Taqtile" />
 
-      <TextField title="Senha" type="password" onChange={setPassword} />
+      <TextField
+        title="E-mail"
+        type="email-address"
+        isPassword={false}
+        onChange={setEmail}
+        error={errorEmail}
+      />
+
+      <TextField
+        title="Senha"
+        type="default"
+        isPassword={true}
+        onChange={setPassword}
+        error={errorPassword}
+      />
 
       <Button body={"Entrar"} onPress={validateLogin} loading={loading} />
     </>

@@ -1,6 +1,18 @@
 import React from "react";
-import { TouchableOpacity, StyleSheet, Text } from "react-native";
+import styled from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
+
+const BackButtonWrapper = styled.TouchableOpacity`
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 10px;
+`;
+
+const BackButtonText = styled.Text`
+  color: gray;
+  font-size: 16px;
+`;
 
 export const BackButton = () => {
   const navigation = useNavigation();
@@ -10,21 +22,8 @@ export const BackButton = () => {
   };
 
   return (
-    <TouchableOpacity onPress={handlePress} style={styles.backButton}>
-      <Text style={styles.backText}>Voltar</Text>
-    </TouchableOpacity>
+    <BackButtonWrapper onPress={handlePress}>
+      <BackButtonText>Voltar</BackButtonText>
+    </BackButtonWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  backButton: {
-    position: "absolute",
-    top: 16,
-    left: 16,
-    padding: 10,
-  },
-  backText: {
-    color: "gray",
-    fontSize: 16,
-  },
-});

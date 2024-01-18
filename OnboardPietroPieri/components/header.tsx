@@ -1,26 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { HeaderContainer, HeaderText } from "../styles/styles";
+import { HeaderProps } from "../interfaces/component";
 
-export const Header = () => {
+export const Header: React.FC<HeaderProps> = ({ text }) => {
   return (
-    <View style={styles.center}>
-      <Text style={styles.header}>Bem vindo(a) à Taqtile!</Text>
-    </View>
+    <HeaderContainer>
+      <HeaderText>{text}</HeaderText>
+    </HeaderContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  center: {
-    marginTop: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 0.3,
-    paddingHorizontal: 24,
-  },
-  header: {
-    fontSize: 30,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "black",
-  },
-});
