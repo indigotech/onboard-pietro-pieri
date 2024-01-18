@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { View } from "react-native";
 import { FAB } from "./fab";
-import { ModalizeComponent } from "./modalize";
+import { CreateUserModal } from "./modalize";
 import { Modalize } from "react-native-modalize";
 
 export const CreateUser: React.FC = () => {
@@ -22,7 +22,7 @@ export const CreateUser: React.FC = () => {
   return (
     <View>
       <FAB onPress={openModal} />
-      <ModalizeComponent modalRef={modalRef} closeModal={closeModal} />
+      <CreateUserModal modalRef={modalRef} closeModal={closeModal} />
     </View>
   );
 };

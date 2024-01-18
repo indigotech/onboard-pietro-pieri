@@ -8,7 +8,7 @@ interface ModalizeComponentProps {
   closeModal: () => void;
 }
 
-export const ModalizeComponent: React.FC<ModalizeComponentProps> = ({
+export const CreateUserModal: React.FC<ModalizeComponentProps> = ({
   modalRef,
   closeModal,
 }) => {
