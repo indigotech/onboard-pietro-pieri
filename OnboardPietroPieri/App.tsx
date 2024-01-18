@@ -12,7 +12,7 @@ import { client } from "./apollo/apolloclient";
 import { ApolloProvider } from "@apollo/client";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { UserListScreen } from "./components/user-list";
+import { UserListScreen } from "./components/user-screen";
 
 const Stack = createStackNavigator();
 

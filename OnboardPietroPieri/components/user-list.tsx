@@ -1,40 +1,62 @@
-import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  FlatList,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import React, { useState, useRef } from "react";
+import { FlatList, Text, ActivityIndicator } from "react-native";
 import { User } from "../interfaces/mutation";
 import { USERS } from "../apollo/query";
 import { useQuery } from "@apollo/client";
-import { Users } from "../interfaces/query";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { renderItem } from "../utils/render";
+import { PageInput, Users } from "../interfaces/query";
+import { pageInputInitialValue } from "../utils/pages";
 
-export const UserListScreen = () => {
-  const [token, setToken] = useState<string | null>(null);
+interface UserListProps {
+  token: string | null;
+}
 
-  useEffect(() => {
-    const getToken = async () => {
-      const userToken = await AsyncStorage.getItem("userToken");
-      setToken(userToken);
-    };
+export const UserList: React.FC<UserListProps> = ({ token }) => {
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const page = useRef<PageInput>(pageInputInitialValue);
+  const pageLimit = 20;
+  const [userList, setUserList] = useState<User[]>([]);
 
-    getToken();
-  }, []);
-
-  const { loading, error, data } = useQuery<Users>(USERS, {
-    skip: token === null,
+  const { error, data, fetchMore } = useQuery<Users>(USERS, {
+    variables: {
+      input: { offset: page.current.offset, limit: pageLimit },
+    },
     context: {
       headers: {
         authorization: token,
       },
     },
+    onCompleted: (data) => {
+      if (data.users.nodes) {
+        setUserList((prevList) => [...prevList, ...data.users.nodes]);
+      }
+      setInitialLoading(false);
+    },
   });
 
-  if (loading) {
+  const handleEndReached = () => {
+    if (!loadingMore) {
+      setLoadingMore(true);
+      if (data?.users.pageInfo.hasNextPage) {
+        fetchMore({
+          variables: {
+            input: {
+              offset: page.current.offset + pageLimit,
+              limit: pageLimit,
+            },
+          },
+        }).then(() => {
+          setLoadingMore(false);
+          page.current.offset += pageLimit;
+        });
+      } else {
+        setLoadingMore(false);
+      }
+    }
+  };
+
+  if (initialLoading) {
     return <ActivityIndicator color="black" size="large" />;
   }
 
@@ -42,22 +64,16 @@ export const UserListScreen = () => {
     return <Text>Ocorreu um ao carregar os usuários: {error.message}</Text>;
   }
 
-  const userList: User[] | undefined = data?.users.nodes;
-
   return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={userList}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
-    </SafeAreaView>
+    <FlatList
+      data={userList}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+      onEndReached={handleEndReached}
+      onEndReachedThreshold={0.1}
+      ListFooterComponent={
+        loadingMore ? <ActivityIndicator color="black" /> : null
+      }
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-});
