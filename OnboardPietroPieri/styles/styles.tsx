@@ -1,22 +1,24 @@
 import styled from "styled-components/native";
 
-export const InputWrapper = styled.View`
-  margin-top: 30px;
+export const CenteredContainer = styled.View`
   align-items: center;
+`;
+
+export const Spacing = styled.View`
+  height: 36px;
 `;
 
 export const InputText = styled.Text`
   font-size: 12px;
   font-weight: regular;
   color: #777777;
-  margin-bottom: 12px;
   width: 80%;
 `;
 
 export const InputField = styled.TextInput`
   border-bottom-width: 1px;
   border-color: #777777;
-  height: 44px;
+  height: 36px;
   padding-horizontal: 10px;
   width: 80%;
   border-radius: 10px;

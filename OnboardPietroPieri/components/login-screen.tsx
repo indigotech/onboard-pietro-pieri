@@ -1,14 +1,28 @@
 import React from "react";
 import { ActivityIndicator } from "react-native";
-import { TextFieldProps, ButtonProps } from "../interfaces/component";
 import {
-  InputWrapper,
+  CenteredContainer,
   InputText,
   InputField,
   ButtonWrapper,
   ButtonText,
   CaptionText,
 } from "../styles/styles";
+import { KeyboardTypeOptions } from "react-native";
+
+export interface TextFieldProps {
+  title: string;
+  type?: KeyboardTypeOptions;
+  isPassword: boolean;
+  onChange: (text: string) => void;
+  error?: boolean;
+}
+
+export interface ButtonProps {
+  body: string;
+  onPress?: () => void;
+  loading: boolean;
+}
 
 function TextField({
   title,
@@ -18,7 +32,7 @@ function TextField({
   error = false,
 }: TextFieldProps): React.JSX.Element {
   return (
-    <InputWrapper>
+    <CenteredContainer>
       <InputText>{title}</InputText>
       <InputField
         keyboardType={type}
@@ -28,13 +42,13 @@ function TextField({
         error={error}
       />
       {error && <CaptionText>Este campo é obrigatório.</CaptionText>}
-    </InputWrapper>
+    </CenteredContainer>
   );
 }
 
 function Button({ body, onPress, loading }: ButtonProps): React.JSX.Element {
   return (
-    <InputWrapper>
+    <CenteredContainer>
       <ButtonWrapper onPress={onPress} disabled={loading} loading={loading}>
         {loading ? (
           <ActivityIndicator color="black" size="small" />
@@ -42,7 +56,7 @@ function Button({ body, onPress, loading }: ButtonProps): React.JSX.Element {
           <ButtonText>{body}</ButtonText>
         )}
       </ButtonWrapper>
-    </InputWrapper>
+    </CenteredContainer>
   );
 }
 export { TextField, Button };

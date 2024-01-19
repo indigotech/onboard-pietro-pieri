@@ -11,13 +11,14 @@ import {
   RoleContainer,
   RoleText,
   InputText,
-  InputWrapper,
+  CenteredContainer,
   ButtonContainer,
+  Spacing,
 } from "../styles/styles";
 import { useNavigation } from "@react-navigation/native";
 import { BackButton } from "./back-button";
 import { Header } from "./header";
-import { UserForm as FormUser } from "../interfaces/component";
+import { UserForm as FormUser } from "../validation/validation";
 
 export const UserForm = () => {
   const [name, setName] = useState("");
@@ -29,7 +30,7 @@ export const UserForm = () => {
   const [createUser] = useMutation<User>(CREATE_USER);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
-  const [errorName, seterrorName] = useState(false);
+  const [errorName, setErrorName] = useState(false);
   const [errorEmail, seterrorEmail] = useState(false);
   const [errorPhone, seterrorPhone] = useState(false);
   const [errorBirthDate, seterrorBirthDate] = useState(false);
@@ -47,12 +48,12 @@ export const UserForm = () => {
 
     const formValidate = formValidation(userData);
 
-    if (!formValidate[1]) {
-      seterrorBirthDate(formValidate[0].errorBirthDate);
-      seterrorEmail(formValidate[0].errorEmail);
-      seterrorName(formValidate[0].errorName);
-      seterrorPhone(formValidate[0].errorPhone);
-      seterrorPassword(formValidate[0].errorPassword);
+    if (!formValidate.isValid) {
+      seterrorBirthDate(formValidate.error.errorBirthDate);
+      seterrorEmail(formValidate.error.errorEmail);
+      setErrorName(formValidate.error.errorName);
+      seterrorPhone(formValidate.error.errorPhone);
+      seterrorPassword(formValidate.error.errorPassword);
     } else {
       try {
         setLoading(true);
@@ -97,6 +98,8 @@ export const UserForm = () => {
         error={errorName}
       />
 
+      <Spacing />
+
       <TextField
         title="Email"
         type="email-address"
@@ -104,6 +107,8 @@ export const UserForm = () => {
         onChange={setEmail}
         error={errorEmail}
       />
+
+      <Spacing />
 
       <TextField
         title="Telefone"
@@ -113,6 +118,8 @@ export const UserForm = () => {
         error={errorPhone}
       />
 
+      <Spacing />
+
       <TextField
         title="Data de nascimento - (YYYY-MM-DD)"
         type="numeric"
@@ -120,6 +127,8 @@ export const UserForm = () => {
         isPassword={false}
         error={errorBirthDate}
       />
+
+      <Spacing />
 
       <TextField
         title="Senha"
@@ -129,7 +138,9 @@ export const UserForm = () => {
         error={errorPassword}
       />
 
-      <InputWrapper>
+      <Spacing />
+
+      <CenteredContainer>
         <InputText>Permissão:</InputText>
         <RoleContainer>
           <RoleText>Usuário</RoleText>
@@ -145,7 +156,7 @@ export const UserForm = () => {
             onPress={() => setRole("admin")}
           />
         </RoleContainer>
-      </InputWrapper>
+      </CenteredContainer>
 
       <ButtonContainer>
         <Button body="Enviar" loading={loading} onPress={handleFormSubmit} />

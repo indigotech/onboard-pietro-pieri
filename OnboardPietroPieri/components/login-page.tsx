@@ -8,6 +8,7 @@ import { LoginData } from "../interfaces/mutation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { Header } from "./header";
+import { Spacing } from "../styles/styles";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -77,6 +78,8 @@ export const LoginPage = () => {
         error={errorEmail}
       />
 
+      <Spacing />
+
       <TextField
         title="Senha"
         type="default"
@@ -84,6 +87,8 @@ export const LoginPage = () => {
         onChange={setPassword}
         error={errorPassword}
       />
+
+      <Spacing />
 
       <Button body={"Entrar"} onPress={validateLogin} loading={loading} />
     </>

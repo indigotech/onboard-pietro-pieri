@@ -1,5 +1,26 @@
 import { Alert } from "react-native";
-import { ErrorForm, UserForm } from "../interfaces/component";
+
+export interface UserForm {
+  name: string;
+  phone: string;
+  birthDate: string;
+  email: string;
+  role: string;
+  password: string;
+}
+
+export interface ErrorForm {
+  errorName: boolean;
+  errorPhone: boolean;
+  errorBirthDate: boolean;
+  errorEmail: boolean;
+  errorPassword: boolean;
+}
+
+interface FormValidation {
+  error: ErrorForm;
+  isValid: boolean;
+}
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,15 +46,7 @@ const isvalidateBirthDate = (birthDate: string): boolean => {
   return selectedDate <= minimumDate;
 };
 
-const isEmpty = (value: string): boolean => {
-  if (value === "") {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-const formValidation = (form: UserForm): [ErrorForm, boolean] => {
+const formValidation = (form: UserForm): FormValidation => {
   const errorForm: ErrorForm = {
     errorName: false,
     errorBirthDate: false,
@@ -42,14 +55,23 @@ const formValidation = (form: UserForm): [ErrorForm, boolean] => {
     errorPassword: false,
   };
 
-  if (isEmpty(form.name)) {
+  const formValidation: FormValidation = {
+    isValid: true,
+    error: errorForm,
+  };
+
+  if (form.name === "") {
     errorForm.errorName = true;
 
-    return [errorForm, false];
-  } else if (isEmpty(form.phone)) {
+    formValidation.isValid = false;
+
+    return formValidation;
+  } else if (form.phone === "") {
     errorForm.errorPhone = true;
 
-    return [errorForm, false];
+    formValidation.isValid = false;
+
+    return formValidation;
   } else if (!isvalidateBirthDate(form.birthDate)) {
     Alert.alert(
       "Erro",
@@ -58,7 +80,9 @@ const formValidation = (form: UserForm): [ErrorForm, boolean] => {
 
     errorForm.errorBirthDate = true;
 
-    return [errorForm, false];
+    formValidation.isValid = false;
+
+    return formValidation;
   } else if (!isValidPassword(form.password)) {
     Alert.alert(
       "Erro",
@@ -67,22 +91,20 @@ const formValidation = (form: UserForm): [ErrorForm, boolean] => {
 
     errorForm.errorPassword = true;
 
-    return [errorForm, false];
+    formValidation.isValid = false;
+
+    return formValidation;
   } else if (!isValidEmail(form.email)) {
     Alert.alert("Erro", "Insira um e-mail válido.");
 
     errorForm.errorEmail = true;
 
-    return [errorForm, false];
+    formValidation.isValid = false;
+
+    return formValidation;
   } else {
-    return [errorForm, true];
+    return formValidation;
   }
 };
 
-export {
-  isValidEmail,
-  isValidPassword,
-  isvalidateBirthDate,
-  isEmpty,
-  formValidation,
-};
+export { isValidEmail, isValidPassword, isvalidateBirthDate, formValidation };
