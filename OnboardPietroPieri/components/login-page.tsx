@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { isValidEmail, isValidPassword } from "../validation/validation";
-import { View, Alert } from "react-native";
+import { Alert } from "react-native";
 import { TextField, Button } from "./login-screen";
 import { useMutation } from "@apollo/client";
 import { LOGIN } from "../apollo/mutation";

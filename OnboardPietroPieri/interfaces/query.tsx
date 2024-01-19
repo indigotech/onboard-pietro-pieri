@@ -20,3 +20,7 @@ export interface UserNode {
   count: number;
   pageInfo: PageInfo;
 }
+
+export interface UserOutput {
+  user: User;
+}
