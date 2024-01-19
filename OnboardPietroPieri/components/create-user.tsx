@@ -1,28 +1,18 @@
-import React, { useRef } from "react";
+import React from "react";
 import { View } from "react-native";
 import { FAB } from "./fab";
-import { CreateUserModal } from "./modalize";
-import { Modalize } from "react-native-modalize";
+import { useNavigation } from "@react-navigation/native";
 
 export const CreateUser: React.FC = () => {
-  const modalRef = useRef<Modalize | null>(null);
+  const navigation = useNavigation();
 
-  const openModal = () => {
-    if (modalRef.current) {
-      modalRef.current.open();
-    }
-  };
-
-  const closeModal = () => {
-    if (modalRef.current) {
-      modalRef.current.close();
-    }
-  };
+  function handleNavigate(): void {
+    navigation.navigate("UserForm" as never);
+  }
 
   return (
     <View>
-      <FAB onPress={openModal} />
-      <CreateUserModal modalRef={modalRef} closeModal={closeModal} />
+      <FAB onPress={handleNavigate} />
     </View>
   );
 };

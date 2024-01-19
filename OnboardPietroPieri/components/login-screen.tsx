@@ -1,103 +1,62 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from "react";
+import { ActivityIndicator } from "react-native";
 import {
-  TouchableOpacity,
-  TextInput,
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+  CenteredContainer,
+  InputText,
+  InputField,
+  ButtonWrapper,
+  ButtonText,
+  CaptionText,
+} from "../styles/styles";
+import { KeyboardTypeOptions } from "react-native";
 
-interface TextFieldProps {
+export interface TextFieldProps {
   title: string;
-  type?: string;
-  onChange: (value: string) => void;
+  type?: KeyboardTypeOptions;
+  isPassword: boolean;
+  onChange: (text: string) => void;
+  error?: boolean;
 }
 
-interface ButtonProps {
+export interface ButtonProps {
   body: string;
-  onPress: () => void;
+  onPress?: () => void;
   loading: boolean;
 }
 
 function TextField({
   title,
   type,
+  isPassword,
   onChange,
+  error = false,
 }: TextFieldProps): React.JSX.Element {
-  const isPassword = type === "password";
   return (
-    <View>
-      <Text style={styles.inputText}>{title}</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType={isPassword ? "default" : "email-address"}
+    <CenteredContainer>
+      <InputText>{title}</InputText>
+      <InputField
+        keyboardType={type}
         autoCapitalize="none"
         secureTextEntry={isPassword}
         onChangeText={onChange}
-      ></TextInput>
-    </View>
+        error={error}
+      />
+      {error && <CaptionText>Este campo é obrigatório.</CaptionText>}
+    </CenteredContainer>
   );
 }
 
 function Button({ body, onPress, loading }: ButtonProps): React.JSX.Element {
   return (
-    <TouchableOpacity
-      style={[styles.button, loading ? styles.disabledButton : null]}
-      onPress={onPress}
-      disabled={loading}
-    >
-      {loading ? (
-        <ActivityIndicator color="black" size="small" />
-      ) : (
-        <Text style={styles.buttonText}>{body}</Text>
-      )}
-    </TouchableOpacity>
+    <CenteredContainer>
+      <ButtonWrapper onPress={onPress} disabled={loading} loading={loading}>
+        {loading ? (
+          <ActivityIndicator color="black" size="small" />
+        ) : (
+          <ButtonText>{body}</ButtonText>
+        )}
+      </ButtonWrapper>
+    </CenteredContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  inputText: {
-    color: "black",
-    fontWeight: "normal",
-    marginLeft: 40,
-    top: 28,
-  },
-  input: {
-    marginLeft: 40,
-    marginTop: 30,
-    height: 50,
-    borderColor: "gray",
-    borderWidth: 2,
-    paddingHorizontal: 10,
-    width: "80%",
-    borderRadius: 10,
-  },
-  button: {
-    height: 50,
-    marginTop: 50,
-    marginLeft: 40,
-    backgroundColor: "#9403fc",
-    padding: 10,
-    borderRadius: 10,
-    width: "80%",
-  },
-  buttonText: {
-    textAlign: "center",
-    fontWeight: "bold",
-    color: "white",
-    fontSize: 16,
-  },
-  disabledButton: {
-    backgroundColor: "yellow",
-  },
-});
-
 export { TextField, Button };

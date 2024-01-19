@@ -14,6 +14,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { UserListScreen } from "./components/user-screen";
 import { UserDetail } from "./components/user-detail";
+import { UserForm } from "./components/user-form";
 
 const Stack = createStackNavigator();
 
@@ -28,6 +29,7 @@ const App = () => {
           >
             <Stack.Screen name="LoginPage" component={LoginPage} />
             <Stack.Screen name="UserListScreen" component={UserListScreen} />
+            <Stack.Screen name="UserForm" component={UserForm} />
             <Stack.Screen name="UserDetail" component={UserDetail} />
           </Stack.Navigator>
         </SafeAreaView>

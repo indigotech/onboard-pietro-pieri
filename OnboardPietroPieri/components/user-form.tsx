@@ -1,37 +1,59 @@
 import React, { useState } from "react";
-import {
-  TextInput,
-  StyleSheet,
-  Text,
-  ScrollView,
-  Alert,
-  View,
-} from "react-native";
+import { Alert } from "react-native";
 import { RadioButton } from "react-native-paper";
-import { formValidate } from "../validation/validation";
 import { ApolloError, useMutation } from "@apollo/client";
 import { CREATE_USER } from "../apollo/mutation";
-import { Button } from "./login-screen";
+import { formValidation } from "../validation/validation";
 import { User } from "../interfaces/mutation";
+import { TextField, Button } from "./login-screen";
+import {
+  FormContainer,
+  RoleContainer,
+  RoleText,
+  InputText,
+  CenteredContainer,
+  ButtonContainer,
+  Spacing,
+} from "../styles/styles";
+import { useNavigation } from "@react-navigation/native";
+import { BackButton } from "./back-button";
+import { Header } from "./header";
+import { UserForm as FormUser } from "../validation/validation";
 
-interface UserFormProps {
-  closeModal: () => void;
-}
-
-export const UserForm = ({ closeModal }: UserFormProps) => {
+export const UserForm = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
-  const [createUser, { error, data }] = useMutation<User>(CREATE_USER);
+  const [createUser] = useMutation<User>(CREATE_USER);
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
+  const [errorName, setErrorName] = useState(false);
+  const [errorEmail, seterrorEmail] = useState(false);
+  const [errorPhone, seterrorPhone] = useState(false);
+  const [errorBirthDate, seterrorBirthDate] = useState(false);
+  const [errorPassword, seterrorPassword] = useState(false);
 
   const handleFormSubmit = async () => {
-    const userData = { name, email, phone, birthDate, password, role };
-    if (!formValidate(password, email, birthDate)) {
-      /* empty */
+    const userData: FormUser = {
+      name,
+      email,
+      phone,
+      birthDate,
+      password,
+      role,
+    };
+
+    const formValidate = formValidation(userData);
+
+    if (!formValidate.isValid) {
+      seterrorBirthDate(formValidate.error.errorBirthDate);
+      seterrorEmail(formValidate.error.errorEmail);
+      setErrorName(formValidate.error.errorName);
+      seterrorPhone(formValidate.error.errorPhone);
+      seterrorPassword(formValidate.error.errorPassword);
     } else {
       try {
         setLoading(true);
@@ -40,14 +62,15 @@ export const UserForm = ({ closeModal }: UserFormProps) => {
         });
 
         if (response.data) {
-          Alert.alert("Sucesso", "Usuario cadastrado", [
+          Alert.alert("Sucesso", "Usuário cadastrado", [
             {
               onPress: () => {
-                closeModal();
+                navigation.goBack();
               },
             },
           ]);
         }
+
         if (response.errors) {
           Alert.alert("Erro", response.errors.toString());
         }
@@ -57,94 +80,87 @@ export const UserForm = ({ closeModal }: UserFormProps) => {
           Alert.alert("Erro", errorApollo.message);
         }
       }
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.formContainer}>
-      <TextInput
-        style={styles.input}
-        placeholder="Nome"
-        value={name}
-        onChangeText={(text) => setName(text)}
+    <FormContainer>
+      <Header text="Criar usuário"></Header>
+
+      <BackButton />
+
+      <TextField
+        title="Nome"
+        isPassword={false}
+        type="email-address"
+        onChange={setName}
+        error={errorName}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-        keyboardType="email-address"
+
+      <Spacing />
+
+      <TextField
+        title="Email"
+        type="email-address"
+        isPassword={false}
+        onChange={setEmail}
+        error={errorEmail}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Telefone"
-        value={phone}
-        onChangeText={(text) => setPhone(text)}
-        keyboardType="phone-pad"
+
+      <Spacing />
+
+      <TextField
+        title="Telefone"
+        type="phone-pad"
+        isPassword={false}
+        onChange={setPhone}
+        error={errorPhone}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Data de nascimento - (YYYY-MM-DD)"
-        value={birthDate}
-        onChangeText={(text) => setBirthDate(text)}
-        keyboardType="numeric"
+
+      <Spacing />
+
+      <TextField
+        title="Data de nascimento - (YYYY-MM-DD)"
+        type="numeric"
+        onChange={setBirthDate}
+        isPassword={false}
+        error={errorBirthDate}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-        secureTextEntry
+
+      <Spacing />
+
+      <TextField
+        title="Senha"
+        type="default"
+        isPassword={true}
+        onChange={setPassword}
+        error={errorPassword}
       />
-      <Text style={styles.label}>Permissão:</Text>
-      <View>
-        <RadioButton.Group
-          onValueChange={(value) => setRole(value)}
-          value={role}
-        >
-          <View style={styles.radioContainer}>
-            <Text>Usuário</Text>
-            <RadioButton value="user" />
-          </View>
-          <View style={styles.radioContainer}>
-            <Text>Administrador</Text>
-            <RadioButton value="admin" />
-          </View>
-        </RadioButton.Group>
-      </View>
-      <Button body="Enviar" onPress={handleFormSubmit} loading={loading} />
-    </ScrollView>
+
+      <Spacing />
+
+      <CenteredContainer>
+        <InputText>Permissão:</InputText>
+        <RoleContainer>
+          <RoleText>Usuário</RoleText>
+          <RadioButton
+            value="user"
+            status={role === "user" ? "checked" : "unchecked"}
+            onPress={() => setRole("user")}
+          />
+          <RoleText>Administrador</RoleText>
+          <RadioButton
+            value="admin"
+            status={role === "admin" ? "checked" : "unchecked"}
+            onPress={() => setRole("admin")}
+          />
+        </RoleContainer>
+      </CenteredContainer>
+
+      <ButtonContainer>
+        <Button body="Enviar" loading={loading} onPress={handleFormSubmit} />
+      </ButtonContainer>
+    </FormContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  formContainer: {
-    flexGrow: 1,
-    padding: 16,
-  },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-    borderRadius: 8,
-  },
-  roleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  label: {
-    marginBottom: 8,
-    fontSize: 16,
-  },
-  radioContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-});

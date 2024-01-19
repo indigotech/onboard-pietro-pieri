@@ -1,17 +1,39 @@
 import { Alert } from "react-native";
 
-const isValidEmail = (email: string) => {
+export interface UserForm {
+  name: string;
+  phone: string;
+  birthDate: string;
+  email: string;
+  role: string;
+  password: string;
+}
+
+export interface ErrorForm {
+  errorName: boolean;
+  errorPhone: boolean;
+  errorBirthDate: boolean;
+  errorEmail: boolean;
+  errorPassword: boolean;
+}
+
+interface FormValidation {
+  error: ErrorForm;
+  isValid: boolean;
+}
+
+const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
 
-const isValidPassword = (password: string) => {
+const isValidPassword = (password: string): boolean => {
   return (
     password.length >= 7 && /[a-zA-Z]/.test(password) && /\d/.test(password)
   );
 };
 
-const isvalidateBirthDate = (birthDate: string) => {
+const isvalidateBirthDate = (birthDate: string): boolean => {
   const [year, month, day] = birthDate.split("-");
   const currentDate = new Date();
   const minimumDate = new Date(2020, 1, 1);
@@ -24,31 +46,65 @@ const isvalidateBirthDate = (birthDate: string) => {
   return selectedDate <= minimumDate;
 };
 
-const formValidate = (
-  password: string,
-  email: string,
-  birthDate: string,
-): boolean => {
-  if (!isvalidateBirthDate(birthDate)) {
+const formValidation = (form: UserForm): FormValidation => {
+  const errorForm: ErrorForm = {
+    errorName: false,
+    errorBirthDate: false,
+    errorEmail: false,
+    errorPhone: false,
+    errorPassword: false,
+  };
+
+  const formValidation: FormValidation = {
+    isValid: true,
+    error: errorForm,
+  };
+
+  if (form.name === "") {
+    errorForm.errorName = true;
+
+    formValidation.isValid = false;
+
+    return formValidation;
+  } else if (form.phone === "") {
+    errorForm.errorPhone = true;
+
+    formValidation.isValid = false;
+
+    return formValidation;
+  } else if (!isvalidateBirthDate(form.birthDate)) {
     Alert.alert(
       "Erro",
-      "Insira um data de nascimento valida (antes de 01-01-2020 e no formato (DD/MM/YYYY)",
+      "Insira uma data de nascimento válida (antes de 01-01-2020 e no formato DD/MM/YYYY)",
     );
 
-    return false;
-  } else if (!isValidPassword(password)) {
+    errorForm.errorBirthDate = true;
+
+    formValidation.isValid = false;
+
+    return formValidation;
+  } else if (!isValidPassword(form.password)) {
     Alert.alert(
       "Erro",
-      "Por favor, a senha deve não ser vazia, deve ter pelo menos 7 caracteres, pelo menos uma letra e um dígito.",
+      "A senha deve ter pelo menos 7 caracteres, pelo menos uma letra e um dígito.",
     );
 
-    return false;
-  } else if (!isValidEmail(email)) {
-    Alert.alert("Erro", "Por favor, insira um email válido.");
+    errorForm.errorPassword = true;
 
-    return false;
+    formValidation.isValid = false;
+
+    return formValidation;
+  } else if (!isValidEmail(form.email)) {
+    Alert.alert("Erro", "Insira um e-mail válido.");
+
+    errorForm.errorEmail = true;
+
+    formValidation.isValid = false;
+
+    return formValidation;
+  } else {
+    return formValidation;
   }
-  return true;
 };
 
-export { isValidEmail, isValidPassword, isvalidateBirthDate, formValidate };
+export { isValidEmail, isValidPassword, isvalidateBirthDate, formValidation };
