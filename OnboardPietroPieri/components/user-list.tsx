@@ -11,15 +11,12 @@ import { useQuery } from "@apollo/client";
 import { renderItem } from "../utils/render";
 import { PageInput, Users } from "../interfaces/query";
 import { pageInputInitialValue } from "../utils/pages";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 export const UserList = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const page = useRef<PageInput>(pageInputInitialValue);
   const pageLimit = 20;
-  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const [refreshing, setRefreshing] = useState(false);
   const [userList, setUserList] = useState<User[]>([]);
 
@@ -76,16 +73,10 @@ export const UserList = () => {
     return <Text>Ocorreu um ao carregar os usuários: {error.message}</Text>;
   }
 
-  const handlePress = (id: string) => {
-    navigation.navigate("UserDetail", { id });
-  };
-
   return (
     <FlatList
       data={userList}
-      renderItem={({ item }) =>
-        renderItem({ item, onPress: () => handlePress(item.id) })
-      }
+      renderItem={renderItem}
       keyExtractor={(item, index) => item.id + index.toString()}
       onEndReached={handleEndReached}
       onEndReachedThreshold={0.1}
